@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Neural Network Prediction</title>
+    <script type="text/javascript" src="./scatterplot.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/ml5/0.7.2/ml5.min.js"></script>
+  </head>
+  <body>
+    <h1>Neural Network Prediction</h1>
+    <label>ppi:</label>
+    <input type="text" id="ppi" /><br />
+    <label>cores:</label>
+    <input type="text" id="cores" /><br />
+    <label>memory:</label>
+    <input type="text" id="memory" /><br />
+    <label>storage:</label>
+    <input type="text" id="storage" /><br />
+    <label>rearcam:</label>
+    <input type="text" id="rearcam" /><br />
+    <label>frontcam:</label>
+    <input type="text" id="frontcam" /><br />
+    <label>battery:</label>
+    <input type="text" id="battery" /><br />
+    <label>thickness:</label>
+    <input type="text" id="thickness" /><br />
+    <label>resolution:</label>
+    <input type="text" id="resolution" /><br />
+    <button onclick="makePrediction()">Predict</button>
+    <div id="chart"></div>
+
+    <script type="text/javascript">
+      let nn;
+
+      async function loadModel() {
+        nn = await ml5.neuralNetwork('./model/model.json');
+      }
+
+      async function makePrediction() {
+        let ppi = parseFloat(document.getElementById("ppi").value);
+        let cores = parseInt(document.getElementById("cores").value);
+        let memory = parseInt(document.getElementById("memory").value);
+        let storage = parseInt(document.getElementById("storage").value);
+        let rearcam = parseFloat(document.getElementById("rearcam").value);
+        let frontcam = parseFloat(document.getElementById("frontcam").value);
+        let battery = parseInt(document.getElementById("battery").value);
+        let thickness = parseFloat(document.getElementById("thickness").value);
+        let resolution = parseFloat(document.getElementById("resolution").value);
+
+        let result = await nn.predict({
+          ppi: ppi,
+          cores: cores,
+          memory: memory,
+          storage: storage,
+          rearcam: rearcam,
+          frontcam: frontcam,
+          battery: battery,
+          thickness: thickness,
+          resolution: resolution
+        });
+
+        console.log(result[0].price);
+
+        // update chart with prediction
+        updateChart([{ x: battery, y: result[0].price }]);
+      }
+
+      loadModel();
+    </script>
+  </body>
+</html>
